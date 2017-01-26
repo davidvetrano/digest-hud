@@ -97,13 +97,13 @@ angular.module('digestHud', [])
       if (showDetails) refreshDetails();
     });
 
-    hudElement.on('copy', function(ev) {
-      ev.originalEvent.clipboardData.setData('text/plain', detailsText);
-      ev.preventDefault();
-    });
+    // hudElement.on('copy', function(ev) {
+    //   ev.originalEvent.clipboardData.setData('text/plain', detailsText);
+    //   ev.preventDefault();
+    // });
 
-    buttonsElement.find('#digestHud-refresh').on('click', refreshDetails);
-    buttonsElement.find('#digestHud-reset').on('click', resetTimings);
+    angular.element(buttonsElement[0].querySelector('#digestHud-refresh')).on('click', refreshDetails);
+    angular.element(buttonsElement[0].querySelector('#digestHud-reset')).on('click', resetTimings);
     buttonsElement.on('click', function(ev) {ev.stopPropagation();});
 
     hudElement.on('mousedown mouseup click', function(ev) {ev.stopPropagation();});
@@ -129,7 +129,7 @@ angular.module('digestHud', [])
     detailsElement.css({
       whiteSpace: 'pre',
       minWidth: '30em',
-      maxWidth: '50em',
+      maxWidth: '80em',
       display: 'none'
     });
     angular.element(document.body).append(hudElement);
@@ -257,7 +257,7 @@ angular.module('digestHud', [])
         var watchTimingSet = false;
         if (!watchTiming) {
           // Capture watch timing (and its key) once, before we descend in $$watchDelegates.
-          watchTiming = createTiming(formatExpression(watchExpression));
+          watchTiming = createTiming(formatExpression(watchExpression, listener));
           watchTimingSet = true;
         }
         try {
@@ -377,10 +377,10 @@ angular.module('digestHud', [])
     return ('\u2007\u2007' + (value * 100).toFixed(1) + '%').slice(-5);
   }
 
-  function formatExpression(watchExpression) {
+  function formatExpression(watchExpression, listener) {
     if (!watchExpression) return '';
-    if (angular.isString(watchExpression)) return watchExpression;
-    if (angular.isString(watchExpression.exp)) return watchExpression.exp;
+    if (angular.isString(watchExpression)) return watchExpression + ' ' + (listener && listener.toString().replace(/\s+/g, ' ').substring(0, 100));
+    if (angular.isString(watchExpression.exp)) return watchExpression.exp + ' ' + (listener && listener.toString().replace(/\s+/g, ' ').substring(0, 100));
     if (watchExpression.name) return 'function ' + watchExpression.name + '() {\u2026}';
     return watchExpression.toString();
   }
